@@ -23,6 +23,16 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  icons: {
+    icon: [
+      { url: '/favicon.png', sizes: 'any' },
+      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.png', sizes: '16x16', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/favicon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
   openGraph: {
     title: "Gutnes Digital - Digitalización y Desarrollo Web en Sevilla",
     description: "Expertos en digitalización empresarial, desarrollo web, SEO y auditoría IT en Alcalá de Guadaíra, Sevilla. Transformamos tu negocio digitalmente.",
@@ -30,11 +40,20 @@ export const metadata: Metadata = {
     siteName: "Gutnes Digital",
     locale: "es_ES",
     type: "website",
+    images: [
+      {
+        url: '/favicon.png',
+        width: 1200,
+        height: 630,
+        alt: 'Gutnes Digital Logo',
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Gutnes Digital - Digitalización y Desarrollo Web en Sevilla",
     description: "Expertos en digitalización empresarial, desarrollo web, SEO y auditoría IT en Alcalá de Guadaíra, Sevilla.",
+    images: ['/favicon.png'],
   },
   robots: {
     index: true,
@@ -48,7 +67,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'tu-codigo-de-verificacion-aqui', // Lo agregarás después desde Search Console
+    google: 'google86b4f550ad9bd86d',
   },
 };
 
