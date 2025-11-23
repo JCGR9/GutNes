@@ -6,6 +6,9 @@ import { motion, useInView, useScroll, useTransform, AnimatePresence } from 'fra
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import logo from '@/images/logo.png';
+import ambondapp from '@/images/ambondapp.png';
+import cuevasanita from '@/images/cuevasanita.png';
+import vivo from '@/images/vivo.png';
 import { findBestResponse } from '@/data/chatbotKnowledge';
 import {
   Globe,
@@ -158,7 +161,19 @@ export default function HomePage() {
       name: "Polvero el Vivo",
       category: "Construcción",
       description: "Landing page moderna para almacén de materiales de construcción con más de 60 años de experiencia",
-      image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80"
+      image: vivo
+    },
+    {
+      name: "AmBondApp",
+      category: "Gestión de Bandas",
+      description: "Sistema de Gestión Integral para bandas de música. Gestión completa de uniformidad, stock de instrumentos, actuaciones, cuentas, partituras y administración",
+      image: ambondapp
+    },
+    {
+      name: "Cuevas de Anita",
+      category: "Restaurante",
+      description: "Web para restaurante tradicional especializado en cocina casera y eventos. Diseño moderno que refleja la calidez del establecimiento",
+      image: cuevasanita
     }
   ];
 
@@ -1546,16 +1561,25 @@ export default function HomePage() {
             </div>
           </AnimatedContent>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 justify-items-center">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {portafolio.map((project, index) => (
               <AnimatedCard key={index} delay={index * 0.15}>
                 <Card className="overflow-hidden h-full hover:shadow-2xl transition-all duration-300 group">
                   <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={project.image}
-                      alt={project.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
+                    {typeof project.image === 'string' ? (
+                      <img
+                        src={project.image}
+                        alt={project.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    ) : (
+                      <Image
+                        src={project.image}
+                        alt={project.name}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                    )}
                     <div className="absolute inset-0 bg-linear-to-t from-slate-900/80 to-transparent" />
                     <div className="absolute bottom-4 left-4">
                       <span className="px-3 py-1 bg-linear-to-r from-amber-500 to-yellow-500 text-slate-900 text-sm font-bold rounded-full shadow-lg">
