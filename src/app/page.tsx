@@ -102,8 +102,10 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState('servicios');
   
   // Contact form state
-  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
+  const [contactForm, setContactForm] = useState({ name: '', email: '', service: '', message: '' });
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   // Floating navigation state
   const [showFloatingNav, setShowFloatingNav] = useState(false);
@@ -237,6 +239,43 @@ export default function HomePage() {
     "¿Hacéis webs?",
     "Quiero presupuesto"
   ];
+
+  // Función para manejar el envío del formulario de contacto
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('access_key', 'c41c8d05-6a82-461f-8d8e-c6cf3341a119');
+      formData.append('name', contactForm.name);
+      formData.append('email', contactForm.email);
+      formData.append('service', contactForm.service);
+      formData.append('message', contactForm.message);
+      formData.append('subject', `Nueva consulta de ${contactForm.name} - ${contactForm.service || 'General'}`);
+      formData.append('from_name', 'Formulario Web Gutnes');
+
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setShowSuccessMessage(true);
+        setContactForm({ name: '', email: '', service: '', message: '' });
+        setTimeout(() => setShowSuccessMessage(false), 5000);
+      } else {
+        setSubmitError('Hubo un error al enviar el mensaje. Por favor, intenta de nuevo.');
+      }
+    } catch (error) {
+      setSubmitError('Error de conexión. Por favor, verifica tu internet e intenta de nuevo.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleSendMessage = () => {
     if (!inputMessage.trim()) return;
@@ -1713,44 +1752,93 @@ export default function HomePage() {
             <AnimatedContent delay={0.2}>
               <Card className="p-8 bg-white/10 backdrop-blur-lg border-white/20">
                 <h3 className="text-2xl font-bold mb-6">Solicita una Consulta Gratuita</h3>
-                <form className="space-y-4">
+                
+                {showSuccessMessage && (
+                  <div className="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-lg flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-400 flex-shrink-0" />
+                    <p className="text-green-100 text-sm">¡Mensaje enviado! Te contactaremos pronto.</p>
+                  </div>
+                )}
+
+                {submitError && (
+                  <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-lg">
+                    <p className="text-red-100 text-sm">{submitError}</p>
+                  </div>
+                )}
+
+                <form onSubmit={handleContactSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-semibold mb-2">Nombre</label>
+                    <label className="block text-sm font-semibold mb-2">Nombre *</label>
                     <input
                       type="text"
+                      name="name"
+                      required
+                      value={contactForm.name}
+                      onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
                       className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                       placeholder="Tu nombre completo"
+                      disabled={isSubmitting}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold mb-2">Email</label>
+                    <label className="block text-sm font-semibold mb-2">Email *</label>
                     <input
                       type="email"
+                      name="email"
+                      required
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
                       className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                       placeholder="tu@email.com"
+                      disabled={isSubmitting}
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold mb-2">Servicio de Interés</label>
-                    <select className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500">
-                      <option value="">Selecciona una opción</option>
-                      <option value="digitalizacion">Digitalización Empresarial</option>
-                      <option value="auditoria">Auditoría Informática</option>
-                      <option value="web">Desarrollo Web</option>
-                      <option value="seo">Posicionamiento SEO</option>
+                    <select 
+                      name="service"
+                      value={contactForm.service}
+                      onChange={(e) => setContactForm({...contactForm, service: e.target.value})}
+                      className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                      disabled={isSubmitting}
+                    >
+                      <option value="" className="bg-slate-800">Selecciona una opción</option>
+                      <option value="Digitalización Empresarial" className="bg-slate-800">Digitalización Empresarial</option>
+                      <option value="Auditoría Informática" className="bg-slate-800">Auditoría Informática</option>
+                      <option value="Desarrollo Web" className="bg-slate-800">Desarrollo Web</option>
+                      <option value="Posicionamiento SEO" className="bg-slate-800">Posicionamiento SEO</option>
+                      <option value="Consultoría General" className="bg-slate-800">Consultoría General</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold mb-2">Mensaje</label>
+                    <label className="block text-sm font-semibold mb-2">Mensaje *</label>
                     <textarea
+                      name="message"
+                      required
+                      value={contactForm.message}
+                      onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
                       rows={4}
                       className="w-full p-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                       placeholder="Cuéntanos sobre tu proyecto..."
+                      disabled={isSubmitting}
                     />
                   </div>
-                  <Button className="w-full bg-linear-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-bold text-lg py-6 shadow-xl shadow-amber-500/30">
-                    <Sparkles className="mr-2 h-5 w-5" />
-                    Enviar Consulta
+                  <Button 
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-linear-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-bold text-lg py-6 shadow-xl shadow-amber-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="mr-2 h-5 w-5 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" />
+                        Enviando...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="mr-2 h-5 w-5" />
+                        Enviar Consulta
+                      </>
+                    )}
                   </Button>
                 </form>
               </Card>
@@ -2115,7 +2203,7 @@ export default function HomePage() {
                       <Button 
                         onClick={() => {
                           setShowSuccessMessage(false);
-                          setContactForm({ name: '', email: '', message: '' });
+                          setContactForm({ name: '', email: '', service: '', message: '' });
                         }}
                         className="mt-4"
                         variant="outline"
